@@ -1,81 +1,117 @@
 #include <iostream>
 using namespace std;
 
-const int MAX_SIZE = 100;
+// 链栈节点定义
+struct LinkNode
+{
+    char data;
+    LinkNode *next;
+    LinkNode(char val) : data(val), next(nullptr) {}
+};
 
-template <typename T>
-class SeqStack
+// 链栈类定义
+class LinkedStack
 {
 private:
-    T data[MAX_SIZE];
-    int top;
+    LinkNode *topNode; // 栈顶指针
 
 public:
-    SeqStack()
-    {
-        top = -1;
-    }
+    // 构造函数
+    LinkedStack() : topNode(nullptr) {}
 
-    bool isEmpty()
+    // 析构函数
+    ~LinkedStack()
     {
-        return top == -1;
-    }
-
-    bool isFull()
-    {
-        return top == MAX_SIZE - 1;
-    }
-
-    void push(T item)
-    {
-        if (isFull())
+        while (!isEmpty())
         {
-            cout << "Stack is full, cannot push." << endl;
-            return;
+            pop();
         }
-        data[++top] = item;
     }
 
-    T pop()
+    // 判断栈是否为空
+    bool isEmpty() const
+    {
+        return topNode == nullptr;
+    }
+
+    // 入栈操作
+    void push(char item)
+    {
+        LinkNode *newNode = new LinkNode(item);
+        newNode->next = topNode;
+        topNode = newNode;
+    }
+
+    // 出栈操作
+    char pop()
     {
         if (isEmpty())
         {
-            cout << "Stack is empty, cannot pop." << endl;
-            return T();
+            cerr << "Stack is empty!" << endl;
+            return '\0';
         }
-        return data[top--];
+        char topData = topNode->data;
+        LinkNode *temp = topNode;
+        topNode = topNode->next;
+        delete temp;
+        return topData;
     }
 
-    T peek()
+    // 获取栈顶元素
+    char peek() const
     {
         if (isEmpty())
         {
-            cout << "Stack is empty, no top element." << endl;
-            return T();
+            cerr << "Stack is empty!" << endl;
+            return '\0';
         }
-        return data[top];
+        return topNode->data;
     }
 };
 
-#define MaxSize 10 // 定义栈中元素的最大个数
-typedef struct
+// 括号匹配检查函数
+bool BracketCheck(const char str[], int length)
 {
-    ElemType data[MaxSize]; // 静态数组存放栈中元素
-    int top0;               // 0号栈栈顶指针
-    int top1;               // 1号栈栈顶指针
-} ShStack;
+    LinkedStack stack;
 
-// 初始化栈
-void InitSqStack(ShStack &S)
-{
-    S.top0 = -1; // 初始化栈顶指针
-    S.top1 = MaxSize;
+    for (int i = 0; i < length; i++)
+    {
+        // 如果是左括号，则入栈
+        if (str[i] == '(' || str[i] == '[' || str[i] == '{')
+        {
+            stack.push(str[i]);
+        }
+        // 如果是右括号
+        else if (str[i] == ')' || str[i] == ']' || str[i] == '}')
+        {
+            // 栈为空，右括号多余
+            if (stack.isEmpty())
+            {
+                return false;
+            }
+
+            char topElem = stack.pop();
+
+            // 检查括号是否匹配
+            if ((str[i] == ')' && topElem != '(') ||
+                (str[i] == ']' && topElem != '[') ||
+                (str[i] == '}' && topElem != '{'))
+            {
+                return false;
+            }
+        }
+        // 非括号字符，忽略
+    }
+
+    // 栈不为空，左括号多余
+    return stack.isEmpty();
 }
 
-struct Linknode
+int main()
 {
-    int data;
-    Linknode *next;
-} Linknode, *LiStack;
-
-typedef Linknode *Node;
+    char test[] = "{[()]}";
+    cout << "Bracket check result: "
+         << (BracketCheck(test, sizeof(test) - 1) ? "Valid" : "Invalid")
+         << endl;
+    return 0;
+}

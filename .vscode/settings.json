@@ -62,5 +62,9 @@
     },
     "editor.suggest.snippetsPreventQuickSuggestions": false,
     "aiXcoder.showTrayIcon": true,
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "cSpell.words": [
+      "ababcabcacbab",
+      "abcac"
+    ]
   }
